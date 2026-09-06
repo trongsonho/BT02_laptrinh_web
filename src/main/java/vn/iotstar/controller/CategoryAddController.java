@@ -35,6 +35,10 @@ public class CategoryAddController extends HttpServlet {
             HttpServletResponse resp)
             throws ServletException, IOException {
 
+        if (!vn.iotstar.util.AuthUtil.checkAdmin(req, resp)) {
+            return;
+        }
+
         RequestDispatcher dispatcher =
                 req.getRequestDispatcher(
                         "/views/admin/add-category.jsp"
@@ -48,6 +52,10 @@ public class CategoryAddController extends HttpServlet {
             HttpServletRequest req,
             HttpServletResponse resp)
             throws ServletException, IOException {
+
+        if (!vn.iotstar.util.AuthUtil.checkAdmin(req, resp)) {
+            return;
+        }
 
         Category category = new Category();
 

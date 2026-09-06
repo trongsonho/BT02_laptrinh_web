@@ -26,6 +26,10 @@ public class CategoryDeleteController extends HttpServlet {
             HttpServletResponse resp)
             throws ServletException, IOException {
 
+        if (!vn.iotstar.util.AuthUtil.checkAdmin(req, resp)) {
+            return;
+        }
+
         String id = req.getParameter("id");
 
         if (id == null || id.trim().isEmpty()) {

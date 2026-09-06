@@ -35,6 +35,10 @@ public class CategoryEditController extends HttpServlet {
             HttpServletResponse resp)
             throws ServletException, IOException {
 
+        if (!vn.iotstar.util.AuthUtil.checkAdmin(req, resp)) {
+            return;
+        }
+
         String id = req.getParameter("id");
 
         if (id == null || id.trim().isEmpty()) {
@@ -91,6 +95,10 @@ public class CategoryEditController extends HttpServlet {
             HttpServletRequest req,
             HttpServletResponse resp)
             throws ServletException, IOException {
+
+        if (!vn.iotstar.util.AuthUtil.checkAdmin(req, resp)) {
+            return;
+        }
 
         Category category =
                 new Category();

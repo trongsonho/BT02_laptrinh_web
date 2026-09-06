@@ -5,7 +5,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Danh sách danh mục</title>
-    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .main-container {
+            padding: 20px;
+        }
         table {
             border-collapse: collapse;
             width: 100%;
@@ -21,8 +28,14 @@
     </style>
 </head>
 <body>
+    <jsp:include page="/header.jsp" />
+    <div class="main-container">
     <h2>Danh sách danh mục</h2>
-    <a href="add">Thêm danh mục</a>
+    <div style="margin-bottom: 15px;">
+        <a href="add" style="font-weight:bold;">+ Thêm danh mục</a> | 
+        <a href="${pageContext.request.contextPath}/admin/products">Quản lý Sản phẩm</a> | 
+        <a href="${pageContext.request.contextPath}/">Về trang chủ</a>
+    </div>
     <table> <!-- Không còn cellpadding -->
         <thead>
             <tr>
@@ -51,5 +64,6 @@
             </c:forEach>
         </tbody>
     </table>
+    </div>
 </body>
 </html>

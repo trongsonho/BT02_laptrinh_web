@@ -28,6 +28,10 @@ public class CategoryListController extends HttpServlet {
             HttpServletResponse resp)
             throws ServletException, IOException {
 
+        if (!vn.iotstar.util.AuthUtil.checkAdmin(req, resp)) {
+            return;
+        }
+
         try {
 
             List<Category> categoryList =

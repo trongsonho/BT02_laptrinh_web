@@ -1,14 +1,10 @@
 package vn.iotstar.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Category")
@@ -31,6 +27,13 @@ public class Category implements Serializable {
     @Column(name = "icons")
     private String icon;
 
+    @OneToMany(
+        mappedBy = "category",
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY
+    )
+    private List<Product> products = new ArrayList<>();
+
     public Category() {
     }
 
@@ -48,6 +51,12 @@ public class Category implements Serializable {
         this.id = id;
     }
 
+    public void setId(Long id) {
+        if (id != null) {
+            this.id = id.intValue();
+        }
+    }
+
     public String getName() {
         return name;
     }
@@ -62,6 +71,14 @@ public class Category implements Serializable {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
     @Override
