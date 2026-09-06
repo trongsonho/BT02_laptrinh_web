@@ -10,7 +10,12 @@ A default testing account is automatically initialized on application startup if
 - **Password:** `123456`
 - **Email:** `admin@example.com`
 - **Status:** Active (pre-activated, usable immediately without OTP verification)
-
+- **Role:** ADMIN
+- **Username:** `user`
+- **Password:** `123456`
+- **Email:** `user@example.com`
+- **Status:** Active (pre-activated, usable immediately without OTP verification)
+- **Role:** USER
 ## Authentication Flow
 
 - **Trang chủ:** `/` -> `HomeServlet` -> `home.jsp` (hiển thị 10 sản phẩm mới nhất)
