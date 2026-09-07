@@ -27,20 +27,7 @@ public class RegisterServlet
             return;
         }
 
-        // Tự động tạo tên đăng nhập mặc định duy nhất theo timestamp
-        long timestampSuffix = System.currentTimeMillis() % 1000000;
-        String defaultUsername = "user" + timestampSuffix;
-
-        // Tự động tạo mật khẩu tạm thời mặc định an toàn
-        int randomDigits = 1000 + new java.util.Random().nextInt(9000);
-        String defaultPassword = "Pass@" + randomDigits;
-
-        req.setAttribute("defaultUsername", defaultUsername);
-        req.setAttribute("defaultPassword", defaultPassword);
-
-        req.getRequestDispatcher(
-                "/register.jsp")
-                .forward(req, resp);
+        req.getRequestDispatcher("/register.jsp").forward(req, resp);
     }
 
     @Override
@@ -51,14 +38,9 @@ public class RegisterServlet
 
         req.setCharacterEncoding("UTF-8");
 
-        String username =
-                req.getParameter("username");
-
-        String email =
-                req.getParameter("email");
-
-        String password =
-                req.getParameter("password");
+        String username = req.getParameter("username");
+        String email = req.getParameter("email");
+        String password = req.getParameter("password");
 
         String error;
         try {
@@ -71,24 +53,11 @@ public class RegisterServlet
         }
 
         if (error != null) {
+            req.setAttribute("error", error);
+            req.setAttribute("username", username);
+            req.setAttribute("email", email);
 
-            req.setAttribute(
-                    "error",
-                    error);
-            req.setAttribute(
-                    "username",
-                    username);
-            req.setAttribute(
-                    "password",
-                    password);
-            req.setAttribute(
-                    "email",
-                    email);
-
-            req.getRequestDispatcher(
-                    "/register.jsp")
-                    .forward(req, resp);
-
+            req.getRequestDispatcher("/register.jsp").forward(req, resp);
             return;
         }
 

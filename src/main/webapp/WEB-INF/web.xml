@@ -5,6 +5,20 @@
          version="6.0">
   <display-name>bt02_laptrinh_web</display-name>
 
+  <filter>
+    <filter-name>sitemesh</filter-name>
+    <filter-class>vn.iotstar.filter.MySiteMeshFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>sitemesh</filter-name>
+    <url-pattern>/profile</url-pattern>
+    <url-pattern>/profile/*</url-pattern>
+    <url-pattern>/profile.jsp</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+
   <session-config>
     <session-timeout>30</session-timeout>
   </session-config>

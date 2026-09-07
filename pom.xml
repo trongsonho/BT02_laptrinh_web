@@ -82,6 +82,21 @@
             <version>2.0.3</version>
         </dependency>
 
+        <!-- SiteMesh 3 (Jakarta Servlet 6 compatible) -->
+        <dependency>
+            <groupId>org.sitemesh</groupId>
+            <artifactId>sitemesh</artifactId>
+            <version>3.3.0-RC1</version>
+        </dependency>
+
+        <!-- JUnit 5 for testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

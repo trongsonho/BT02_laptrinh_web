@@ -73,27 +73,35 @@
           method="post">
 
         <label>Tên đăng nhập</label>
-
         <input type="text"
                name="username"
+               id="username"
+               value=""
+               autocomplete="off"
                required>
 
         <label>Email</label>
-
         <input type="email"
                name="email"
+               id="email"
+               value=""
+               autocomplete="email"
                required>
 
         <label>Mật khẩu</label>
-
         <input type="password"
                name="password"
+               id="password"
+               value=""
+               autocomplete="new-password"
                required>
 
         <label>Xác nhận mật khẩu</label>
-
         <input type="password"
                name="confirmPassword"
+               id="confirmPassword"
+               value=""
+               autocomplete="new-password"
                required>
 
         <button type="submit">

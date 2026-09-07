@@ -53,12 +53,14 @@
             <c:when test="${not empty sessionScope.user and (sessionScope.user.role == 'ADMIN' or sessionScope.user.role == 'admin')}">
                 <a href="${pageContext.request.contextPath}/admin/products">Admin Sản phẩm</a>
                 <a href="${pageContext.request.contextPath}/admin/category/list">Admin Category</a>
+                <a href="${pageContext.request.contextPath}/profile">Hồ sơ</a>
                 <span class="user-greeting">Chào, ${sessionScope.user.username}</span>
                 <a href="${pageContext.request.contextPath}/logout">Đăng xuất</a>
             </c:when>
 
             <%-- Case B: Logged-in NORMAL USER --%>
             <c:when test="${not empty sessionScope.user}">
+                <a href="${pageContext.request.contextPath}/profile">Hồ sơ</a>
                 <span class="user-greeting">Chào, ${sessionScope.user.username}</span>
                 <a href="${pageContext.request.contextPath}/logout">Đăng xuất</a>
             </c:when>

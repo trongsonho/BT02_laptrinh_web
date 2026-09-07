@@ -39,6 +39,15 @@ public class User implements Serializable {
     @Column(name = "role", length = 50)
     private String role = "USER";
 
+    @Column(name = "fullname", length = 150)
+    private String fullname;
+
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+    @Column(name = "image", length = 255)
+    private String image;
+
     public User() {
     }
 
@@ -120,5 +129,29 @@ public class User implements Serializable {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

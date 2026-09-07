@@ -26,13 +26,16 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return null;
+        }
         EntityManager em = JpaConfig.getEntityManager();
 
         try {
             return em.createQuery(
-                    "SELECT u FROM User u WHERE u.email = :email",
+                    "SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:email)",
                     User.class)
-                    .setParameter("email", email)
+                    .setParameter("email", email.trim())
                     .getResultStream()
                     .findFirst()
                     .orElse(null);

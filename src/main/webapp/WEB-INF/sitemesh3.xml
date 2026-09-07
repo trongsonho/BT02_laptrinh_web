@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+    <mapping path="/profile" decorator="default.jsp" />
+    <mapping path="/profile/*" decorator="default.jsp" />
+    <mapping path="/profile.jsp" decorator="default.jsp" />
+    <mapping path="/image*" exclude="true" />
+    <mapping path="/admin/*" exclude="true" />
+</sitemesh>
