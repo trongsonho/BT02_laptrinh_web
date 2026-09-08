@@ -55,7 +55,7 @@ public class ProductDetailServlet
 
             req.getRequestDispatcher(
                     "/product-detail.jsp")
-                    .forward(req, resp);
+                    .include(req, resp);
 
         } catch (NumberFormatException e) {
 

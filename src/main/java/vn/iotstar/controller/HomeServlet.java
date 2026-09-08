@@ -22,12 +22,15 @@ public class HomeServlet
             HttpServletResponse resp)
             throws ServletException, IOException {
 
+        var list = productService.findLatest(10);
+        System.out.println(">>> HomeServlet.doGet called! list size = " + (list != null ? list.size() : "null"));
         req.setAttribute(
                 "products",
-                productService.findLatest(10));
+                list);
 
         req.getRequestDispatcher(
                 "/home.jsp")
-                .forward(req, resp);
+                .include(req, resp);
+        System.out.println(">>> HomeServlet.doGet finished!");
     }
 }

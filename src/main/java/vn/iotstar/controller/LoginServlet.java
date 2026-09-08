@@ -36,7 +36,7 @@ public class LoginServlet
 
         req.getRequestDispatcher(
                 "/login.jsp")
-                .forward(req, resp);
+                .include(req, resp);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class LoginServlet
 
             req.getRequestDispatcher(
                     "/login.jsp")
-                    .forward(req, resp);
+                    .include(req, resp);
 
             return;
         }
@@ -77,7 +77,7 @@ public class LoginServlet
 
             req.getRequestDispatcher(
                     "/login.jsp")
-                    .forward(req, resp);
+                    .include(req, resp);
 
             return;
         }

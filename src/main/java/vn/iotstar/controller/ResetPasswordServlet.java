@@ -35,7 +35,7 @@ public class ResetPasswordServlet
 
         req.getRequestDispatcher(
                 "/reset-password.jsp")
-                .forward(req, resp);
+                .include(req, resp);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ResetPasswordServlet
                     "Vui lòng nhập email.");
             req.getRequestDispatcher(
                     "/reset-password.jsp")
-                    .forward(req, resp);
+                    .include(req, resp);
             return;
         }
 
@@ -90,7 +90,7 @@ public class ResetPasswordServlet
 
             req.getRequestDispatcher(
                     "/reset-password.jsp")
-                    .forward(req, resp);
+                    .include(req, resp);
 
             return;
         }

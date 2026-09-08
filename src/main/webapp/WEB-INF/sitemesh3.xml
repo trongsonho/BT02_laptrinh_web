@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemesh>
-    <mapping path="/profile" decorator="default.jsp" />
-    <mapping path="/profile/*" decorator="default.jsp" />
-    <mapping path="/profile.jsp" decorator="default.jsp" />
+    <!-- Map duy nhất 1 Bootstrap decorator cho toàn bộ ứng dụng -->
+    <mapping path="/*" decorator="default.jsp" />
+
+    <!-- Loại trừ tài nguyên tĩnh và nhị phân -->
     <mapping path="/image*" exclude="true" />
-    <mapping path="/admin/*" exclude="true" />
+    <mapping path="/images/*" exclude="true" />
+    <mapping path="/css/*" exclude="true" />
+    <mapping path="/js/*" exclude="true" />
+    <mapping path="/static/*" exclude="true" />
+    <mapping path="*.css" exclude="true" />
+    <mapping path="*.js" exclude="true" />
+    <mapping path="*.png" exclude="true" />
+    <mapping path="*.jpg" exclude="true" />
+    <mapping path="*.jpeg" exclude="true" />
+    <mapping path="*.gif" exclude="true" />
+    <mapping path="*.ico" exclude="true" />
+    <mapping path="*.webp" exclude="true" />
+    <mapping path="/WEB-INF/*" exclude="true" />
 </sitemesh>
+

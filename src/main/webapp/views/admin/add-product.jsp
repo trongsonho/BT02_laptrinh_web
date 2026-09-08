@@ -1,74 +1,63 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Thêm sản phẩm mới</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; }
-        .form-container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { margin-top: 0; color: #333; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        textarea { height: 100px; resize: vertical; }
-        .btn-group { display: flex; gap: 10px; margin-top: 25px; }
-        .btn { padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; text-decoration: none; border: none; font-size: 15px; }
-        .btn-primary { background-color: #007bff; color: white; }
-        .btn-primary:hover { background-color: #0056b3; }
-        .btn-secondary { background-color: #6c757d; color: white; }
-    </style>
-</head>
-<body>
 
-<jsp:include page="/header.jsp" />
+<title>Thêm sản phẩm mới - MyShop Admin</title>
 
-<div class="form-container">
-    <h2>Thêm sản phẩm mới</h2>
+<div class="row justify-content-center my-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2"></i>Thêm sản phẩm mới</h4>
+            </div>
+            <div class="card-body p-4">
+                <form action="${pageContext.request.contextPath}/admin/products/add" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-semibold">Tên sản phẩm (*):</label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="Nhập tên sản phẩm...">
+                    </div>
 
-    <form action="${pageContext.request.contextPath}/admin/products/add" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="name">Tên sản phẩm (*):</label>
-            <input type="text" id="name" name="name" required>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="price" class="form-label fw-semibold">Giá (VNĐ) (*):</label>
+                            <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required placeholder="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="quantity" class="form-label fw-semibold">Số lượng (*):</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="0" required placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="categoryId" class="form-label fw-semibold">Danh mục:</label>
+                        <select class="form-select" id="categoryId" name="categoryId">
+                            <option value="">-- Chọn danh mục --</option>
+                            <c:forEach items="${categories}" var="cat">
+                                <option value="${cat.id}">${cat.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label fw-semibold">Hình ảnh sản phẩm:</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="form-label fw-semibold">Mô tả sản phẩm:</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Nhập mô tả chi tiết sản phẩm..."></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4 fw-bold">
+                            <i class="bi bi-save me-1"></i>Lưu sản phẩm
+                        </button>
+                        <a href="${pageContext.request.contextPath}/admin/products" class="btn btn-secondary px-4">
+                            Hủy bỏ
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="price">Giá (VNĐ) (*):</label>
-            <input type="number" id="price" name="price" step="0.01" min="0" required>
-        </div>
-
-        <div class="form-group">
-            <label for="quantity">Số lượng (*):</label>
-            <input type="number" id="quantity" name="quantity" min="0" required>
-        </div>
-
-        <div class="form-group">
-            <label for="categoryId">Danh mục:</label>
-            <select id="categoryId" name="categoryId">
-                <option value="">-- Chọn danh mục --</option>
-                <c:forEach items="${categories}" var="cat">
-                    <option value="${cat.id}">${cat.name}</option>
-                </c:forEach>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="image">Hình ảnh sản phẩm:</label>
-            <input type="file" id="image" name="image" accept="image/*">
-        </div>
-
-        <div class="form-group">
-            <label for="description">Mô tả sản phẩm:</label>
-            <textarea id="description" name="description"></textarea>
-        </div>
-
-        <div class="btn-group">
-            <button type="submit" class="btn btn-primary">Lưu sản phẩm</button>
-            <a href="${pageContext.request.contextPath}/admin/products" class="btn btn-secondary">Hủy bỏ</a>
-        </div>
-    </form>
+    </div>
 </div>
 
-</body>
-</html>

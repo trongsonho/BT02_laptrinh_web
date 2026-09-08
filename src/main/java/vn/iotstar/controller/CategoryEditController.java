@@ -79,7 +79,7 @@ public class CategoryEditController extends HttpServlet {
                             "/views/admin/edit-category.jsp"
                     );
 
-            dispatcher.forward(req, resp);
+            dispatcher.include(req, resp);
 
         } catch (NumberFormatException e) {
 

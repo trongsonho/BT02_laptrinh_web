@@ -1,65 +1,72 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Đăng ký tài khoản</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; }
-        .form-container { width: 400px; margin: 60px auto; padding: 30px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input[type="text"], input[type="email"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background-color: #007bff; border: none; color: #fff; font-size: 16px; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .error { color: #dc3545; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
-        .links { text-align: center; margin-top: 15px; }
-        .links a { color: #007bff; text-decoration: none; }
-        .links a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-<jsp:include page="/header.jsp" />
-<div class="form-container">
-    <h2>Đăng ký tài khoản</h2>
 
-    <c:if test="${not empty error}">
-        <div class="error">${error}</div>
-    </c:if>
+<title>Đăng ký tài khoản - MyShop</title>
 
-    <form action="${pageContext.request.contextPath}/register" method="post">
-        <div class="form-group">
-            <label for="username">Tên đăng nhập:</label>
-            <input type="text" id="username" name="username" 
-                   value="${not empty username ? username : ''}" 
-                   autocomplete="off" 
-                   placeholder="Nhập tên đăng nhập..." required autofocus>
+<div class="row justify-content-center my-4">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-4 fw-bold">
+                    <i class="bi bi-person-plus text-primary me-2"></i>Đăng ký tài khoản
+                </h3>
+
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div>${error}</div>
+                    </div>
+                </c:if>
+
+                <form action="${pageContext.request.contextPath}/register" method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-semibold">Tên đăng nhập:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="${not empty username ? username : ''}" 
+                                   autocomplete="off" 
+                                   placeholder="Nhập tên đăng nhập..." required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-semibold">Mật khẩu:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   value="" 
+                                   autocomplete="new-password" 
+                                   placeholder="Nhập mật khẩu..." required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Email (*):</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="${not empty email ? email : ''}" 
+                                   autocomplete="email"
+                                   placeholder="Nhập email để nhận mã OTP..." required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100 py-2 fw-bold mb-3">
+                        Đăng ký
+                    </button>
+                </form>
+
+                <div class="text-center pt-2 border-top">
+                    <p class="mb-0">
+                        Đã có tài khoản? 
+                        <a href="${pageContext.request.contextPath}/login" class="text-decoration-none fw-semibold">
+                            Đăng nhập ngay
+                        </a>
+                    </p>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="password">Mật khẩu:</label>
-            <input type="password" id="password" name="password" 
-                   value="" 
-                   autocomplete="new-password" 
-                   placeholder="Nhập mật khẩu..." required>
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email (*):</label>
-            <input type="email" id="email" name="email" 
-                   value="${not empty email ? email : ''}" 
-                   autocomplete="email"
-                   placeholder="Nhập email của bạn để nhận mã OTP..." required>
-        </div>
-
-        <button type="submit">Đăng ký</button>
-    </form>
-
-    <div class="links">
-        <p>Đã có tài khoản? <a href="${pageContext.request.contextPath}/login">Đăng nhập ngay</a></p>
     </div>
 </div>
-</body>
-</html>
+

@@ -32,6 +32,6 @@ public class ProductAdminListServlet
 
         req.getRequestDispatcher(
                 "/views/admin/list-product.jsp")
-                .forward(req, resp);
+                .include(req, resp);
     }
 }

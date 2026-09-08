@@ -23,7 +23,7 @@ public class ForgotPasswordServlet
 
         req.getRequestDispatcher(
                 "/forgot-password.jsp")
-                .forward(req, resp);
+                .include(req, resp);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ForgotPasswordServlet
 
             req.getRequestDispatcher(
                     "/forgot-password.jsp")
-                    .forward(req, resp);
+                    .include(req, resp);
 
             return;
         }
@@ -77,6 +77,6 @@ public class ForgotPasswordServlet
 
         req.getRequestDispatcher(
                 "/reset-password.jsp")
-                .forward(req, resp);
+                .include(req, resp);
     }
 }

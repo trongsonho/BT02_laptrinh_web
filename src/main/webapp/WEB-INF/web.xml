@@ -12,9 +12,7 @@
 
   <filter-mapping>
     <filter-name>sitemesh</filter-name>
-    <url-pattern>/profile</url-pattern>
-    <url-pattern>/profile/*</url-pattern>
-    <url-pattern>/profile.jsp</url-pattern>
+    <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>

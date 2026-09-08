@@ -67,7 +67,7 @@ public class ProductEditServlet
 
         req.getRequestDispatcher(
                 "/views/admin/edit-product.jsp")
-                .forward(req, resp);
+                .include(req, resp);
     }
 
     @Override

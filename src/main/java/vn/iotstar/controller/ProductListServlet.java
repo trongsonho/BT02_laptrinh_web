@@ -68,6 +68,6 @@ public class ProductListServlet
 
         req.getRequestDispatcher(
                 "/product.jsp")
-                .forward(req, resp);
+                .include(req, resp);
     }
 }

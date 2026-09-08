@@ -35,7 +35,7 @@ public class VerifyOtpServlet
 
         req.getRequestDispatcher(
                 "/verify.jsp")
-                .forward(req, resp);
+                .include(req, resp);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class VerifyOtpServlet
                     "Vui lòng nhập email.");
             req.getRequestDispatcher(
                     "/verify.jsp")
-                    .forward(req, resp);
+                    .include(req, resp);
             return;
         }
 
@@ -86,7 +86,7 @@ public class VerifyOtpServlet
 
             req.getRequestDispatcher(
                     "/verify.jsp")
-                    .forward(req, resp);
+                    .include(req, resp);
 
             return;
         }

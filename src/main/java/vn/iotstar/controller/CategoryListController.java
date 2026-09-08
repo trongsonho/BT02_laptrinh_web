@@ -47,7 +47,7 @@ public class CategoryListController extends HttpServlet {
                             "/views/admin/list-category.jsp"
                     );
 
-            dispatcher.forward(req, resp);
+            dispatcher.include(req, resp);
 
         } catch (Throwable e) {
 

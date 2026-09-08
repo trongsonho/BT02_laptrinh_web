@@ -1,122 +1,53 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Hồ sơ cá nhân - MyShop</title>
-    <style>
-        .profile-container {
-            max-width: 650px;
-            margin: 40px auto;
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 35px 40px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
-        .profile-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .profile-header h2 {
-            margin: 10px 0 0 0;
-            color: #2c3e50;
-            font-size: 26px;
-        }
-        .avatar-wrapper {
-            width: 130px;
-            height: 130px;
-            margin: 0 auto 15px auto;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 4px solid #007bff;
-            background: #f1f3f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .avatar-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .alert {
-            padding: 12px 18px;
-            border-radius: 6px;
-            margin-bottom: 25px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            color: #495057;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        .form-control-static {
-            padding: 10px 14px;
-            background-color: #e9ecef;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            color: #495057;
-            font-size: 15px;
-            font-weight: 500;
-        }
-        .form-control {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            font-size: 15px;
-            box-sizing: border-box;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: #80bdff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-        }
-        .file-hint {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 6px;
-        }
-        .btn-submit {
-            width: 100%;
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-top: 10px;
-        }
-        .btn-submit:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
 
-<div class="profile-container">
+<title>Hồ sơ cá nhân - MyShop</title>
+
+<style>
+    .profile-card {
+        max-width: 650px;
+        margin: 20px auto;
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 35px 40px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid #dee2e6;
+    }
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .profile-header h2 {
+        margin: 10px 0 0 0;
+        color: #2c3e50;
+        font-size: 26px;
+    }
+    .avatar-wrapper {
+        width: 130px;
+        height: 130px;
+        margin: 0 auto 15px auto;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid #0d6efd;
+        background: #f1f3f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .avatar-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .file-hint {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 6px;
+    }
+</style>
+
+<div class="profile-card">
     <div class="profile-header">
         <div class="avatar-wrapper">
             <c:choose>
@@ -139,46 +70,52 @@
     </div>
 
     <c:if test="${not empty message}">
-        <div class="alert alert-success">${message}</div>
+        <div class="alert alert-success d-flex align-items-center mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <div>${message}</div>
+        </div>
     </c:if>
 
     <c:if test="${not empty error}">
-        <div class="alert alert-danger">${error}</div>
+        <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div>${error}</div>
+        </div>
     </c:if>
 
     <form method="post" action="${pageContext.request.contextPath}/profile" enctype="multipart/form-data">
-        <div class="form-group">
-            <label>Username:</label>
-            <div class="form-control-static">${user.username}</div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Username:</label>
+            <input type="text" class="form-control bg-light" value="${user.username}" readonly />
         </div>
 
-        <div class="form-group">
-            <label for="email">Email:</label>
+        <div class="mb-3">
+            <label for="email" class="form-label fw-bold">Email:</label>
             <input type="email" id="email" name="email" class="form-control"
                    value="${user.email}" placeholder="Nhập địa chỉ email..." required />
         </div>
 
-        <div class="form-group">
-            <label for="fullname">Họ và tên:</label>
+        <div class="mb-3">
+            <label for="fullname" class="form-label fw-bold">Họ và tên:</label>
             <input type="text" id="fullname" name="fullname" class="form-control"
                    value="${user.fullname}" placeholder="Nhập họ và tên..." required />
         </div>
 
-        <div class="form-group">
-            <label for="phone">Số điện thoại:</label>
+        <div class="mb-3">
+            <label for="phone" class="form-label fw-bold">Số điện thoại:</label>
             <input type="text" id="phone" name="phone" class="form-control"
                    value="${user.phone}" placeholder="Nhập số điện thoại (ví dụ: 0901234567)..." required />
         </div>
 
-        <div class="form-group">
-            <label for="image">Ảnh đại diện mới:</label>
+        <div class="mb-3">
+            <label for="image" class="form-label fw-bold">Ảnh đại diện mới:</label>
             <input type="file" id="image" name="image" class="form-control" accept="image/*" />
             <div class="file-hint">Định dạng hỗ trợ: .jpg, .jpeg, .png, .gif, .webp (Tối đa 5MB). Để trống nếu không muốn đổi ảnh.</div>
         </div>
 
-        <button type="submit" class="btn-submit">Cập nhật</button>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mt-2">
+            <i class="bi bi-save me-1"></i>Cập nhật
+        </button>
     </form>
 </div>
 
-</body>
-</html>

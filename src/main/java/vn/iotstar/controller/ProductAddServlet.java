@@ -39,7 +39,7 @@ public class ProductAddServlet
         req.setAttribute("categories", categoryService.getAll());
         req.getRequestDispatcher(
                 "/views/admin/add-product.jsp")
-                .forward(req, resp);
+                .include(req, resp);
     }
 
     @Override

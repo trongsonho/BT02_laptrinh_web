@@ -27,7 +27,7 @@ public class RegisterServlet
             return;
         }
 
-        req.getRequestDispatcher("/register.jsp").forward(req, resp);
+        req.getRequestDispatcher("/register.jsp").include(req, resp);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class RegisterServlet
             req.setAttribute("username", username);
             req.setAttribute("email", email);
 
-            req.getRequestDispatcher("/register.jsp").forward(req, resp);
+            req.getRequestDispatcher("/register.jsp").include(req, resp);
             return;
         }
 

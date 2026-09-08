@@ -44,7 +44,7 @@ public class CategoryAddController extends HttpServlet {
                         "/views/admin/add-category.jsp"
                 );
 
-        dispatcher.forward(req, resp);
+        dispatcher.include(req, resp);
     }
 
     @Override
