@@ -26,6 +26,7 @@
                             <input type="email" class="form-control ${not empty email || not empty sessionScope.resetEmail ? 'bg-light' : ''}" 
                                    id="email" name="email" 
                                    value="${not empty email ? email : sessionScope.resetEmail}" 
+                                   maxlength="100"
                                    ${not empty email || not empty sessionScope.resetEmail ? 'readonly' : ''} required>
                         </div>
                     </div>
@@ -36,6 +37,9 @@
                             <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
                             <input type="text" class="form-control text-center fw-bold fs-5" 
                                    id="otp" name="otp" maxlength="6" 
+                                   value="${not empty otp ? otp : ''}"
+                                   pattern="[0-9]{6}" inputmode="numeric"
+                                   title="Mã OTP gồm đúng 6 chữ số"
                                    placeholder="000000" required autofocus>
                         </div>
                     </div>
@@ -45,7 +49,9 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
                             <input type="password" class="form-control" id="password" name="password" 
-                                   placeholder="Nhập mật khẩu mới..." required>
+                                   minlength="8" maxlength="100"
+                                   title="Mật khẩu mới phải có từ 8 đến 100 ký tự"
+                                   placeholder="Nhập mật khẩu mới (tối thiểu 8 ký tự)..." required>
                         </div>
                     </div>
 

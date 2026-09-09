@@ -100,8 +100,9 @@ public class CategoryEditController extends HttpServlet {
             return;
         }
 
-        Category category =
-                new Category();
+        String idStr = null;
+        String categoryName = null;
+        DiskFileItem iconItem = null;
 
         DiskFileItemFactory factory =
                 DiskFileItemFactory.builder().get();
@@ -111,145 +112,104 @@ public class CategoryEditController extends HttpServlet {
                 new JakartaServletFileUpload<>(factory);
 
         try {
-
             List<DiskFileItem> items =
                     upload.parseRequest(req);
 
             for (DiskFileItem item : items) {
-
-                // =========================
-                // FORM FIELD
-                // =========================
                 if (item.isFormField()) {
-
                     if ("id".equals(item.getFieldName())) {
-
-                        String id =
-                                item.getString(
-                                        StandardCharsets.UTF_8
-                                );
-
-                        category.setId(
-                                Integer.parseInt(
-                                        id.trim()
-                                )
-                        );
-
-                    } else if ("name".equals(
-                            item.getFieldName())) {
-
-                        category.setName(
-                                item.getString(
-                                        StandardCharsets.UTF_8
-                                )
-                        );
+                        idStr = item.getString(StandardCharsets.UTF_8);
+                    } else if ("name".equals(item.getFieldName())) {
+                        categoryName = item.getString(StandardCharsets.UTF_8);
                     }
-                }
-
-                // =========================
-                // FILE
-                // =========================
-                else {
-
-                    if ("icon".equals(
-                            item.getFieldName())) {
-
-                        // Có ảnh mới
-                        if (item.getSize() > 0) {
-
-                            String originalFileName =
-                                    item.getName();
-
-                            if (originalFileName == null
-                                    || originalFileName
-                                            .trim()
-                                            .isEmpty()) {
-
-                                continue;
-                            }
-
-                            int index =
-                                    originalFileName
-                                            .lastIndexOf(".");
-
-                            String ext = "";
-
-                            if (index >= 0
-                                    && index
-                                    < originalFileName.length() - 1) {
-
-                                ext =
-                                        originalFileName
-                                                .substring(
-                                                        index + 1
-                                                )
-                                                .toLowerCase();
-                            }
-
-                            String fileName;
-
-                            if (!ext.isEmpty()) {
-
-                                fileName =
-                                        System.currentTimeMillis()
-                                        + "."
-                                        + ext;
-
-                            } else {
-
-                                fileName =
-                                        String.valueOf(
-                                                System.currentTimeMillis()
-                                        );
-                            }
-
-                            File dir =
-                                    new File(
-                                            Constant.DIR
-                                            + "/category"
-                                    );
-
-                            if (!dir.exists()) {
-                                dir.mkdirs();
-                            }
-
-                            File file =
-                                    new File(
-                                            dir,
-                                            fileName
-                                    );
-
-                            item.write(
-                                    file.toPath()
-                            );
-
-                            category.setIcon(
-                                    "category/"
-                                    + fileName
-                            );
-                        }
-
-                        // Không upload ảnh mới
-                        // => giữ ảnh cũ
-                        else {
-
-                            Category oldCategory =
-                                    categoryService.get(
-                                            category.getId()
-                                    );
-
-                            if (oldCategory != null) {
-
-                                category.setIcon(
-                                        oldCategory.getIcon()
-                                );
-                            }
-                        }
+                } else {
+                    if ("icon".equals(item.getFieldName()) && item.getSize() > 0) {
+                        iconItem = item;
                     }
                 }
             }
 
-            categoryService.edit(category);
+            int id = -1;
+            try {
+                if (idStr != null) {
+                    id = Integer.parseInt(idStr.trim());
+                }
+            } catch (Exception e) {
+                id = -1;
+            }
+
+            if (id <= 0) {
+                resp.sendRedirect(req.getContextPath() + "/admin/category/list");
+                return;
+            }
+
+            Category oldCategory = categoryService.get(id);
+            if (oldCategory == null) {
+                resp.sendRedirect(req.getContextPath() + "/admin/category/list");
+                return;
+            }
+
+            String trimmedName = (categoryName != null) ? categoryName.trim() : "";
+            String error = null;
+
+            // 1. Validate name
+            if (trimmedName.isEmpty()) {
+                error = "Tên danh mục không được để trống.";
+            } else if (trimmedName.length() < 2 || trimmedName.length() > 100) {
+                error = "Tên danh mục phải có từ 2 đến 100 ký tự.";
+            } else if (vn.iotstar.util.ValidationUtil.hasControlCharacters(trimmedName)) {
+                error = "Tên danh mục chứa ký tự không hợp lệ.";
+            } else {
+                Category existing = categoryService.get(trimmedName);
+                if (existing != null && existing.getId() != id) {
+                    error = "Tên danh mục đã tồn tại.";
+                }
+            }
+
+            // 2. Validate icon (optional)
+            String fileName = null;
+            if (error == null && iconItem != null) {
+                String originalFileName = iconItem.getName();
+                if (!vn.iotstar.util.ValidationUtil.isValidImageExtension(originalFileName)) {
+                    error = "Hình ảnh không hợp lệ. Chỉ chấp nhận các định dạng .jpg, .jpeg, .png, .gif, .webp.";
+                } else if (!vn.iotstar.util.ValidationUtil.isValidImageMime(iconItem.getContentType())) {
+                    error = "File tải lên không phải là định dạng hình ảnh hợp lệ.";
+                } else if (iconItem.getSize() > vn.iotstar.util.ValidationUtil.MAX_IMAGE_SIZE_BYTES) {
+                    error = "Dung lượng ảnh vượt quá giới hạn cho phép (tối đa 5MB).";
+                } else {
+                    String ext = vn.iotstar.util.ValidationUtil.getFileExtension(originalFileName);
+                    fileName = System.currentTimeMillis() + "-" + java.util.UUID.randomUUID().toString().substring(0, 8) + ext;
+                }
+            }
+
+            // Nếu có lỗi validation
+            if (error != null) {
+                Category tempCategory = new Category();
+                tempCategory.setId(id);
+                tempCategory.setName(trimmedName);
+                tempCategory.setIcon(oldCategory.getIcon());
+
+                req.setAttribute("category", tempCategory);
+                req.setAttribute("error", error);
+                RequestDispatcher dispatcher =
+                        req.getRequestDispatcher("/views/admin/edit-category.jsp");
+                dispatcher.include(req, resp);
+                return;
+            }
+
+            // Xử lý lưu ảnh và cập nhật database sau khi validate thành công
+            if (fileName != null && iconItem != null) {
+                File dir = new File(Constant.DIR + "/category");
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                File file = new File(dir, fileName);
+                iconItem.write(file.toPath());
+                oldCategory.setIcon("category/" + fileName);
+            }
+
+            oldCategory.setName(trimmedName);
+            categoryService.edit(oldCategory);
 
             resp.sendRedirect(
                     req.getContextPath()
@@ -257,9 +217,7 @@ public class CategoryEditController extends HttpServlet {
             );
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
             resp.sendRedirect(
                     req.getContextPath()
                     + "/admin/category/list"

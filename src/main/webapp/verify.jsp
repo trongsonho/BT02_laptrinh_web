@@ -40,7 +40,8 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-key"></i></span>
                             <input type="text" class="form-control text-center fw-bold fs-5 letter-spacing" 
-                                   id="otp" name="otp" maxlength="6" 
+                                   id="otp" name="otp" maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
+                                   title="Mã OTP gồm đúng 6 chữ số"
                                    placeholder="000000" required autofocus>
                         </div>
                     </div>

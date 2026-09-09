@@ -57,7 +57,8 @@ public class CategoryAddController extends HttpServlet {
             return;
         }
 
-        Category category = new Category();
+        String categoryName = null;
+        DiskFileItem iconItem = null;
 
         DiskFileItemFactory factory =
                 DiskFileItemFactory.builder().get();
@@ -67,99 +68,78 @@ public class CategoryAddController extends HttpServlet {
                 new JakartaServletFileUpload<>(factory);
 
         try {
-
             List<DiskFileItem> items =
                     upload.parseRequest(req);
 
             for (DiskFileItem item : items) {
-
-                // =========================
-                // TEXT FIELD
-                // =========================
                 if (item.isFormField()) {
-
                     if ("name".equals(item.getFieldName())) {
-
-                        category.setName(
-                                item.getString(
-                                        StandardCharsets.UTF_8
-                                )
-                        );
+                        categoryName = item.getString(StandardCharsets.UTF_8);
                     }
-
-                }
-
-                // =========================
-                // FILE
-                // =========================
-                else {
-
-                    if ("icon".equals(item.getFieldName())
-                            && item.getSize() > 0) {
-
-                        String originalFileName =
-                                item.getName();
-
-                        if (originalFileName == null
-                                || originalFileName.trim().isEmpty()) {
-                            continue;
-                        }
-
-                        int index =
-                                originalFileName.lastIndexOf(".");
-
-                        String ext = "";
-
-                        if (index >= 0
-                                && index < originalFileName.length() - 1) {
-
-                            ext =
-                                    originalFileName
-                                            .substring(index + 1)
-                                            .toLowerCase();
-                        }
-
-                        String fileName;
-
-                        if (!ext.isEmpty()) {
-
-                            fileName =
-                                    System.currentTimeMillis()
-                                    + "."
-                                    + ext;
-
-                        } else {
-
-                            fileName =
-                                    String.valueOf(
-                                            System.currentTimeMillis()
-                                    );
-                        }
-
-                        // uploads/category
-                        File dir =
-                                new File(
-                                        Constant.DIR
-                                        + "/category"
-                                );
-
-                        if (!dir.exists()) {
-                            dir.mkdirs();
-                        }
-
-                        File file =
-                                new File(dir, fileName);
-
-                        item.write(file.toPath());
-
-                        category.setIcon(
-                                "category/" + fileName
-                        );
+                } else {
+                    if ("icon".equals(item.getFieldName()) && item.getSize() > 0) {
+                        iconItem = item;
                     }
                 }
             }
 
-            // INSERT DATABASE
+            String trimmedName = (categoryName != null) ? categoryName.trim() : "";
+            req.setAttribute("name", trimmedName);
+
+            String error = null;
+
+            // 1. Validate name
+            if (trimmedName.isEmpty()) {
+                error = "Tên danh mục không được để trống.";
+            } else if (trimmedName.length() < 2 || trimmedName.length() > 100) {
+                error = "Tên danh mục phải có từ 2 đến 100 ký tự.";
+            } else if (vn.iotstar.util.ValidationUtil.hasControlCharacters(trimmedName)) {
+                error = "Tên danh mục chứa ký tự không hợp lệ.";
+            } else {
+                Category existing = categoryService.get(trimmedName);
+                if (existing != null) {
+                    error = "Tên danh mục đã tồn tại.";
+                }
+            }
+
+            // 2. Validate icon file
+            String fileName = null;
+            if (error == null && iconItem != null) {
+                String originalFileName = iconItem.getName();
+                if (!vn.iotstar.util.ValidationUtil.isValidImageExtension(originalFileName)) {
+                    error = "Hình ảnh không hợp lệ. Chỉ chấp nhận các định dạng .jpg, .jpeg, .png, .gif, .webp.";
+                } else if (!vn.iotstar.util.ValidationUtil.isValidImageMime(iconItem.getContentType())) {
+                    error = "File tải lên không phải là định dạng hình ảnh hợp lệ.";
+                } else if (iconItem.getSize() > vn.iotstar.util.ValidationUtil.MAX_IMAGE_SIZE_BYTES) {
+                    error = "Dung lượng ảnh vượt quá giới hạn cho phép (tối đa 5MB).";
+                } else {
+                    String ext = vn.iotstar.util.ValidationUtil.getFileExtension(originalFileName);
+                    fileName = System.currentTimeMillis() + "-" + java.util.UUID.randomUUID().toString().substring(0, 8) + ext;
+                }
+            }
+
+            // Nếu có lỗi validation
+            if (error != null) {
+                req.setAttribute("error", error);
+                RequestDispatcher dispatcher =
+                        req.getRequestDispatcher("/views/admin/add-category.jsp");
+                dispatcher.include(req, resp);
+                return;
+            }
+
+            // Lưu file và cập nhật database sau khi đã validate hợp lệ
+            Category category = new Category();
+            if (fileName != null && iconItem != null) {
+                File dir = new File(Constant.DIR + "/category");
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                File file = new File(dir, fileName);
+                iconItem.write(file.toPath());
+                category.setIcon("category/" + fileName);
+            }
+
+            category.setName(trimmedName);
             categoryService.insert(category);
 
             resp.sendRedirect(
@@ -168,13 +148,11 @@ public class CategoryAddController extends HttpServlet {
             );
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
-            resp.sendRedirect(
-                    req.getContextPath()
-                    + "/admin/category/list"
-            );
+            req.setAttribute("error", "Lỗi xử lý thêm danh mục: " + e.getMessage());
+            RequestDispatcher dispatcher =
+                    req.getRequestDispatcher("/views/admin/add-category.jsp");
+            dispatcher.include(req, resp);
         }
     }
 }

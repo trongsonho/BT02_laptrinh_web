@@ -13,6 +13,7 @@ import vn.iotstar.service.impl.CategoryServiceImpl;
 import vn.iotstar.service.impl.ProductServiceImpl;
 import vn.iotstar.util.Constant;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 
@@ -82,60 +83,154 @@ public class ProductEditServlet
 
         req.setCharacterEncoding("UTF-8");
 
-        Long id =
-                Long.parseLong(
-                        req.getParameter("id"));
+        String idStr = req.getParameter("id");
+        Long id = null;
+        try {
+            if (idStr != null) {
+                id = Long.parseLong(idStr.trim());
+            }
+        } catch (Exception e) {
+            id = null;
+        }
+
+        if (id == null) {
+            resp.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Mã sản phẩm không hợp lệ.");
+            return;
+        }
 
         Product product =
                 productService.findById(id);
 
         if (product == null) {
             resp.sendError(
-                    HttpServletResponse.SC_NOT_FOUND);
-
+                    HttpServletResponse.SC_NOT_FOUND,
+                    "Không tìm thấy sản phẩm.");
             return;
         }
 
-        product.setName(
-                req.getParameter("name"));
+        String name = req.getParameter("name");
+        String priceStr = req.getParameter("price");
+        String quantityStr = req.getParameter("quantity");
+        String categoryIdStr = req.getParameter("categoryId");
+        String description = req.getParameter("description");
 
-        product.setPrice(
-                new BigDecimal(
-                        req.getParameter("price")));
+        String trimmedName = (name != null) ? name.trim() : "";
+        String trimmedPrice = (priceStr != null) ? priceStr.trim() : "";
+        String trimmedQuantity = (quantityStr != null) ? quantityStr.trim() : "";
+        String trimmedCategory = (categoryIdStr != null) ? categoryIdStr.trim() : "";
+        String trimmedDescription = (description != null) ? description.trim() : "";
 
-        product.setQuantity(
-                Integer.parseInt(
-                        req.getParameter("quantity")));
+        String error = null;
 
-        product.setDescription(
-                req.getParameter("description"));
-
-        String categoryId =
-                req.getParameter("categoryId");
-
-        if (categoryId != null
-                && !categoryId.isBlank()) {
-
-            Category category =
-                    new Category();
-
-            category.setId(
-                    Long.parseLong(categoryId));
-
-            product.setCategory(category);
+        // 1. Validate name
+        if (trimmedName.isEmpty()) {
+            error = "Tên sản phẩm không được để trống.";
+        } else if (trimmedName.length() < 2 || trimmedName.length() > 200) {
+            error = "Tên sản phẩm phải có từ 2 đến 200 ký tự.";
+        } else if (vn.iotstar.util.ValidationUtil.hasControlCharacters(trimmedName)) {
+            error = "Tên sản phẩm chứa ký tự không hợp lệ.";
         }
 
-        Part imagePart =
-                req.getPart("image");
+        // 2. Validate price
+        BigDecimal price = null;
+        if (error == null) {
+            if (trimmedPrice.isEmpty()) {
+                error = "Giá sản phẩm không được để trống.";
+            } else {
+                price = vn.iotstar.util.ValidationUtil.parseNonNegativeBigDecimal(trimmedPrice);
+                if (price == null) {
+                    error = "Giá sản phẩm phải là số không âm hợp lệ.";
+                }
+            }
+        }
 
-        if (imagePart != null
-                && imagePart.getSize() > 0) {
+        // 3. Validate quantity
+        Integer quantity = null;
+        if (error == null) {
+            if (trimmedQuantity.isEmpty()) {
+                error = "Số lượng sản phẩm không được để trống.";
+            } else {
+                quantity = vn.iotstar.util.ValidationUtil.parseNonNegativeInteger(trimmedQuantity);
+                if (quantity == null) {
+                    error = "Số lượng phải là số nguyên không âm hợp lệ.";
+                }
+            }
+        }
 
-            String fileName =
-                    System.currentTimeMillis()
-                            + "-"
-                            + imagePart.getSubmittedFileName();
+        // 4. Validate categoryId
+        Category category = null;
+        if (error == null && !trimmedCategory.isEmpty()) {
+            try {
+                int catId = Integer.parseInt(trimmedCategory);
+                category = categoryService.get(catId);
+                if (category == null) {
+                    error = "Danh mục đã chọn không tồn tại.";
+                }
+            } catch (Exception e) {
+                error = "Mã danh mục không hợp lệ.";
+            }
+        }
 
+        // 5. Validate description
+        if (error == null && trimmedDescription.length() > 5000) {
+            error = "Mô tả sản phẩm không được vượt quá 5000 ký tự.";
+        }
+
+        // 6. Validate Image upload (optional)
+        Part imagePart = null;
+        try {
+            imagePart = req.getPart("image");
+        } catch (Exception e) {
+            error = "Lỗi khi xử lý file tải lên: " + e.getMessage();
+        }
+
+        String newFileName = null;
+        if (error == null && imagePart != null && imagePart.getSize() > 0
+                && imagePart.getSubmittedFileName() != null
+                && !imagePart.getSubmittedFileName().isBlank()) {
+
+            String submittedName = imagePart.getSubmittedFileName();
+            if (!vn.iotstar.util.ValidationUtil.isValidImageExtension(submittedName)) {
+                error = "Hình ảnh không hợp lệ. Chỉ chấp nhận các định dạng .jpg, .jpeg, .png, .gif, .webp.";
+            } else if (!vn.iotstar.util.ValidationUtil.isValidImageMime(imagePart.getContentType())) {
+                error = "File tải lên không phải là định dạng hình ảnh hợp lệ.";
+            } else if (imagePart.getSize() > vn.iotstar.util.ValidationUtil.MAX_IMAGE_SIZE_BYTES) {
+                error = "Dung lượng ảnh vượt quá giới hạn cho phép (tối đa 5MB).";
+            } else {
+                String ext = vn.iotstar.util.ValidationUtil.getFileExtension(submittedName);
+                newFileName = System.currentTimeMillis() + "-" + java.util.UUID.randomUUID().toString().substring(0, 8) + ext;
+            }
+        }
+
+        // Nếu có lỗi validation, render lại form edit với dữ liệu đã nhập
+        if (error != null) {
+            Product tempProduct = new Product();
+            tempProduct.setId(id);
+            tempProduct.setName(trimmedName);
+            tempProduct.setPrice(price != null ? price : BigDecimal.ZERO);
+            tempProduct.setQuantity(quantity != null ? quantity : 0);
+            tempProduct.setDescription(trimmedDescription);
+            tempProduct.setImage(product.getImage());
+            if (category != null) {
+                tempProduct.setCategory(category);
+            } else if (!trimmedCategory.isEmpty()) {
+                Category c = new Category();
+                try { c.setId(Integer.parseInt(trimmedCategory)); } catch (Exception ignored) {}
+                tempProduct.setCategory(c);
+            }
+
+            req.setAttribute("error", error);
+            req.setAttribute("product", tempProduct);
+            req.setAttribute("categories", categoryService.getAll());
+            req.getRequestDispatcher(
+                    "/views/admin/edit-product.jsp")
+                    .include(req, resp);
+            return;
+        }
+
+        if (newFileName != null) {
             String uploadPath =
                     Constant.DIR
                             + "/product";
@@ -150,12 +245,18 @@ public class ProductEditServlet
             imagePart.write(
                     uploadPath
                             + "/"
-                            + fileName);
+                            + newFileName);
 
             product.setImage(
                     "product/"
-                            + fileName);
+                            + newFileName);
         }
+
+        product.setName(trimmedName);
+        product.setPrice(price);
+        product.setQuantity(quantity);
+        product.setDescription(trimmedDescription);
+        product.setCategory(category);
 
         productService.update(product);
 

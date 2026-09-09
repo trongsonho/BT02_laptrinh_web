@@ -59,7 +59,10 @@ public class VerifyOtpServlet
         String otp =
                 req.getParameter("otp");
 
-        if (email == null || email.isBlank()) {
+        String trimmedEmail = (email != null) ? email.trim() : "";
+        req.setAttribute("email", trimmedEmail);
+
+        if (trimmedEmail.isEmpty()) {
             req.setAttribute(
                     "error",
                     "Vui lòng nhập email.");
@@ -69,10 +72,41 @@ public class VerifyOtpServlet
             return;
         }
 
+        if (!vn.iotstar.util.ValidationUtil.isValidEmail(trimmedEmail)) {
+            req.setAttribute(
+                    "error",
+                    "Email không đúng định dạng.");
+            req.getRequestDispatcher(
+                    "/verify.jsp")
+                    .include(req, resp);
+            return;
+        }
+
+        String trimmedOtp = (otp != null) ? otp.trim() : "";
+        if (trimmedOtp.isEmpty()) {
+            req.setAttribute(
+                    "error",
+                    "Vui lòng nhập mã OTP.");
+            req.getRequestDispatcher(
+                    "/verify.jsp")
+                    .include(req, resp);
+            return;
+        }
+
+        if (!vn.iotstar.util.ValidationUtil.isValidOtp(trimmedOtp)) {
+            req.setAttribute(
+                    "error",
+                    "Mã OTP phải gồm đúng 6 chữ số.");
+            req.getRequestDispatcher(
+                    "/verify.jsp")
+                    .include(req, resp);
+            return;
+        }
+
         boolean success =
                 authService.verifyOtp(
-                        email,
-                        otp);
+                        trimmedEmail,
+                        trimmedOtp);
 
         if (!success) {
 

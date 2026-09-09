@@ -37,7 +37,9 @@
                         <label for="username" class="form-label fw-semibold">Tên đăng nhập:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" class="form-control" id="username" name="username" required autofocus placeholder="Nhập tên đăng nhập...">
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="${not empty username ? username : ''}" 
+                                   maxlength="50" required autofocus placeholder="Nhập tên đăng nhập...">
                         </div>
                     </div>
 
@@ -45,7 +47,8 @@
                         <label for="password" class="form-label fw-semibold">Mật khẩu:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" required placeholder="Nhập mật khẩu...">
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   maxlength="100" required placeholder="Nhập mật khẩu...">
                         </div>
                     </div>
 

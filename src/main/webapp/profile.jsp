@@ -92,24 +92,26 @@
         <div class="mb-3">
             <label for="email" class="form-label fw-bold">Email:</label>
             <input type="email" id="email" name="email" class="form-control"
-                   value="${user.email}" placeholder="Nhập địa chỉ email..." required />
+                   value="${user.email}" maxlength="100" placeholder="Nhập địa chỉ email..." required />
         </div>
 
         <div class="mb-3">
             <label for="fullname" class="form-label fw-bold">Họ và tên:</label>
             <input type="text" id="fullname" name="fullname" class="form-control"
-                   value="${user.fullname}" placeholder="Nhập họ và tên..." required />
+                   value="${user.fullname}" maxlength="150" placeholder="Nhập họ và tên..." required />
         </div>
 
         <div class="mb-3">
             <label for="phone" class="form-label fw-bold">Số điện thoại:</label>
             <input type="text" id="phone" name="phone" class="form-control"
-                   value="${user.phone}" placeholder="Nhập số điện thoại (ví dụ: 0901234567)..." required />
+                   value="${user.phone}" pattern="0[0-9]{9,10}"
+                   title="Số điện thoại gồm 10 hoặc 11 chữ số, bắt đầu bằng số 0"
+                   placeholder="Nhập số điện thoại (ví dụ: 0901234567)..." required />
         </div>
 
         <div class="mb-3">
             <label for="image" class="form-label fw-bold">Ảnh đại diện mới:</label>
-            <input type="file" id="image" name="image" class="form-control" accept="image/*" />
+            <input type="file" id="image" name="image" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp,image/*" />
             <div class="file-hint">Định dạng hỗ trợ: .jpg, .jpeg, .png, .gif, .webp (Tối đa 5MB). Để trống nếu không muốn đổi ảnh.</div>
         </div>
 

@@ -248,6 +248,62 @@ public class ProfileServletTest {
         userDao.update(fresh);
     }
 
+    @Test
+    public void testAvatarIsolationUserUpdateDoesNotAffectAdmin() {
+        User admin = userDao.findByUsername("admin");
+        User user = userDao.findByUsername("user");
+        assertNotNull(admin, "Admin must exist");
+        assertNotNull(user, "User must exist");
+
+        String adminOriginalImage = admin.getImage();
+        String userOriginalImage = user.getImage();
+
+        // Simulate User updating their avatar
+        String newUserAvatar = "users/user_isolated_" + System.currentTimeMillis() + ".png";
+        user.setImage(newUserAvatar);
+        userDao.update(user);
+
+        // Verify Admin avatar remains unchanged
+        User freshAdmin = userDao.findById(admin.getId());
+        assertEquals(adminOriginalImage, freshAdmin.getImage(), "Admin image must NOT change when User updates avatar");
+
+        // Verify User avatar changed
+        User freshUser = userDao.findById(user.getId());
+        assertEquals(newUserAvatar, freshUser.getImage());
+
+        // Restore user original image
+        freshUser.setImage(userOriginalImage);
+        userDao.update(freshUser);
+    }
+
+    @Test
+    public void testAvatarIsolationAdminUpdateDoesNotAffectUser() {
+        User admin = userDao.findByUsername("admin");
+        User user = userDao.findByUsername("user");
+        assertNotNull(admin, "Admin must exist");
+        assertNotNull(user, "User must exist");
+
+        String adminOriginalImage = admin.getImage();
+        String userOriginalImage = user.getImage();
+
+        // Simulate Admin updating their avatar
+        String newAdminAvatar = "users/admin_isolated_" + System.currentTimeMillis() + ".png";
+        admin.setImage(newAdminAvatar);
+        userDao.update(admin);
+
+        // Verify User avatar remains unchanged
+        User freshUser = userDao.findById(user.getId());
+        assertEquals(userOriginalImage, freshUser.getImage(), "User image must NOT change when Admin updates avatar");
+
+        // Verify Admin avatar changed
+        User freshAdmin = userDao.findById(admin.getId());
+        assertEquals(newAdminAvatar, freshAdmin.getImage());
+
+        // Restore admin original image
+        freshAdmin.setImage(adminOriginalImage);
+        userDao.update(freshAdmin);
+    }
+
     private HttpServletRequest createMockRequest(String uri, Map<String, Object> sessionAttrs,
                                                 Map<String, Object> requestAttrs,
                                                 Map<String, String> params,

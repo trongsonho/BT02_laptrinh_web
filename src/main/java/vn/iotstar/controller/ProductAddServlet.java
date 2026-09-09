@@ -13,6 +13,7 @@ import vn.iotstar.service.impl.CategoryServiceImpl;
 import vn.iotstar.service.impl.ProductServiceImpl;
 import vn.iotstar.util.Constant;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 
@@ -54,48 +55,128 @@ public class ProductAddServlet
 
         req.setCharacterEncoding("UTF-8");
 
+        String name = req.getParameter("name");
+        String priceStr = req.getParameter("price");
+        String quantityStr = req.getParameter("quantity");
+        String categoryIdStr = req.getParameter("categoryId");
+        String description = req.getParameter("description");
+
+        String trimmedName = (name != null) ? name.trim() : "";
+        String trimmedPrice = (priceStr != null) ? priceStr.trim() : "";
+        String trimmedQuantity = (quantityStr != null) ? quantityStr.trim() : "";
+        String trimmedCategory = (categoryIdStr != null) ? categoryIdStr.trim() : "";
+        String trimmedDescription = (description != null) ? description.trim() : "";
+
+        // Chuẩn bị các thuộc tính để giữ lại dữ liệu khi lỗi
+        req.setAttribute("name", trimmedName);
+        req.setAttribute("price", trimmedPrice);
+        req.setAttribute("quantity", trimmedQuantity);
+        req.setAttribute("categoryId", trimmedCategory);
+        req.setAttribute("description", trimmedDescription);
+
+        String error = null;
+
+        // 1. Validate name
+        if (trimmedName.isEmpty()) {
+            error = "Tên sản phẩm không được để trống.";
+        } else if (trimmedName.length() < 2 || trimmedName.length() > 200) {
+            error = "Tên sản phẩm phải có từ 2 đến 200 ký tự.";
+        } else if (vn.iotstar.util.ValidationUtil.hasControlCharacters(trimmedName)) {
+            error = "Tên sản phẩm chứa ký tự không hợp lệ.";
+        }
+
+        // 2. Validate price
+        BigDecimal price = null;
+        if (error == null) {
+            if (trimmedPrice.isEmpty()) {
+                error = "Giá sản phẩm không được để trống.";
+            } else {
+                price = vn.iotstar.util.ValidationUtil.parseNonNegativeBigDecimal(trimmedPrice);
+                if (price == null) {
+                    error = "Giá sản phẩm phải là số không âm hợp lệ.";
+                }
+            }
+        }
+
+        // 3. Validate quantity
+        Integer quantity = null;
+        if (error == null) {
+            if (trimmedQuantity.isEmpty()) {
+                error = "Số lượng sản phẩm không được để trống.";
+            } else {
+                quantity = vn.iotstar.util.ValidationUtil.parseNonNegativeInteger(trimmedQuantity);
+                if (quantity == null) {
+                    error = "Số lượng phải là số nguyên không âm hợp lệ.";
+                }
+            }
+        }
+
+        // 4. Validate categoryId
+        Category category = null;
+        if (error == null && !trimmedCategory.isEmpty()) {
+            try {
+                int catId = Integer.parseInt(trimmedCategory);
+                category = categoryService.get(catId);
+                if (category == null) {
+                    error = "Danh mục đã chọn không tồn tại.";
+                }
+            } catch (Exception e) {
+                error = "Mã danh mục không hợp lệ.";
+            }
+        }
+
+        // 5. Validate description
+        if (error == null && trimmedDescription.length() > 5000) {
+            error = "Mô tả sản phẩm không được vượt quá 5000 ký tự.";
+        }
+
+        // 6. Validate Image upload (optional)
+        Part imagePart = null;
+        try {
+            imagePart = req.getPart("image");
+        } catch (Exception e) {
+            error = "Lỗi khi xử lý file tải lên: " + e.getMessage();
+        }
+
+        String fileName = null;
+        if (error == null && imagePart != null && imagePart.getSize() > 0
+                && imagePart.getSubmittedFileName() != null
+                && !imagePart.getSubmittedFileName().isBlank()) {
+
+            String submittedName = imagePart.getSubmittedFileName();
+            if (!vn.iotstar.util.ValidationUtil.isValidImageExtension(submittedName)) {
+                error = "Hình ảnh không hợp lệ. Chỉ chấp nhận các định dạng .jpg, .jpeg, .png, .gif, .webp.";
+            } else if (!vn.iotstar.util.ValidationUtil.isValidImageMime(imagePart.getContentType())) {
+                error = "File tải lên không phải là định dạng hình ảnh hợp lệ.";
+            } else if (imagePart.getSize() > vn.iotstar.util.ValidationUtil.MAX_IMAGE_SIZE_BYTES) {
+                error = "Dung lượng ảnh vượt quá giới hạn cho phép (tối đa 5MB).";
+            } else {
+                String ext = vn.iotstar.util.ValidationUtil.getFileExtension(submittedName);
+                fileName = System.currentTimeMillis() + "-" + java.util.UUID.randomUUID().toString().substring(0, 8) + ext;
+            }
+        }
+
+        // Nếu có lỗi validation
+        if (error != null) {
+            req.setAttribute("error", error);
+            req.setAttribute("categories", categoryService.getAll());
+            req.getRequestDispatcher(
+                    "/views/admin/add-product.jsp")
+                    .include(req, resp);
+            return;
+        }
+
+        // Tạo product và lưu ảnh sau khi đã qua tất cả validation
         Product product = new Product();
-
-        product.setName(
-                req.getParameter("name"));
-
-        product.setPrice(
-                new BigDecimal(
-                        req.getParameter("price")));
-
-        product.setQuantity(
-                Integer.parseInt(
-                        req.getParameter("quantity")));
-
-        product.setDescription(
-                req.getParameter("description"));
-
-        String categoryId =
-                req.getParameter("categoryId");
-
-        if (categoryId != null
-                && !categoryId.isBlank()) {
-
-            Category category =
-                    new Category();
-
-            category.setId(
-                    Long.parseLong(categoryId));
-
+        product.setName(trimmedName);
+        product.setPrice(price);
+        product.setQuantity(quantity);
+        product.setDescription(trimmedDescription);
+        if (category != null) {
             product.setCategory(category);
         }
 
-        Part imagePart =
-                req.getPart("image");
-
-        if (imagePart != null
-                && imagePart.getSize() > 0) {
-
-            String fileName =
-                    System.currentTimeMillis()
-                            + "-"
-                            + imagePart.getSubmittedFileName();
-
+        if (fileName != null) {
             String uploadPath =
                     Constant.DIR
                             + "/product";

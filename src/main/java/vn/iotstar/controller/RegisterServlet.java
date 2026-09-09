@@ -42,11 +42,14 @@ public class RegisterServlet
         String email = req.getParameter("email");
         String password = req.getParameter("password");
 
+        String trimmedUsername = (username != null) ? username.trim() : "";
+        String trimmedEmail = (email != null) ? email.trim() : "";
+
         String error;
         try {
             error = authService.register(
-                    username,
-                    email,
+                    trimmedUsername,
+                    trimmedEmail,
                     password);
         } catch (Exception e) {
             error = "Lỗi xử lý đăng ký: " + e.getMessage();
@@ -54,8 +57,8 @@ public class RegisterServlet
 
         if (error != null) {
             req.setAttribute("error", error);
-            req.setAttribute("username", username);
-            req.setAttribute("email", email);
+            req.setAttribute("username", trimmedUsername);
+            req.setAttribute("email", trimmedEmail);
 
             req.getRequestDispatcher("/register.jsp").include(req, resp);
             return;

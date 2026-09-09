@@ -26,7 +26,9 @@
                             <input type="text" class="form-control" id="username" name="username" 
                                    value="${not empty username ? username : ''}" 
                                    autocomplete="off" 
-                                   placeholder="Nhập tên đăng nhập..." required autofocus>
+                                   minlength="3" maxlength="30" pattern="[a-zA-Z0-9_]{3,30}"
+                                   title="Tên đăng nhập gồm 3-30 ký tự, chỉ chứa chữ cái, chữ số và gạch dưới (_)"
+                                   placeholder="Nhập tên đăng nhập (3-30 ký tự)..." required autofocus>
                         </div>
                     </div>
 
@@ -37,7 +39,9 @@
                             <input type="password" class="form-control" id="password" name="password" 
                                    value="" 
                                    autocomplete="new-password" 
-                                   placeholder="Nhập mật khẩu..." required>
+                                   minlength="8" maxlength="100"
+                                   title="Mật khẩu phải có từ 8 đến 100 ký tự"
+                                   placeholder="Nhập mật khẩu (tối thiểu 8 ký tự)..." required>
                         </div>
                     </div>
 
@@ -48,6 +52,7 @@
                             <input type="email" class="form-control" id="email" name="email" 
                                    value="${not empty email ? email : ''}" 
                                    autocomplete="email"
+                                   maxlength="100"
                                    placeholder="Nhập email để nhận mã OTP..." required>
                         </div>
                     </div>

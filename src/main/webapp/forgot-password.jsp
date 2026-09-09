@@ -23,7 +23,9 @@
                         <label for="email" class="form-label fw-semibold">Nhập Email đã đăng ký:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" name="email" required autofocus placeholder="example@domain.com">
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="${not empty email ? email : ''}"
+                                   maxlength="100" required autofocus placeholder="example@domain.com">
                         </div>
                     </div>
 

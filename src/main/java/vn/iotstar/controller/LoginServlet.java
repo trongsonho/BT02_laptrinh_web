@@ -53,8 +53,51 @@ public class LoginServlet
         String password =
                 req.getParameter("password");
 
+        String trimmedUsername = (username != null) ? username.trim() : "";
+        req.setAttribute("username", trimmedUsername);
+
+        if (trimmedUsername.isEmpty()) {
+            req.setAttribute(
+                    "error",
+                    "Vui lòng nhập tên đăng nhập.");
+            req.getRequestDispatcher(
+                    "/login.jsp")
+                    .include(req, resp);
+            return;
+        }
+
+        if (trimmedUsername.length() > 50 || vn.iotstar.util.ValidationUtil.hasControlCharacters(trimmedUsername)) {
+            req.setAttribute(
+                    "error",
+                    "Tên đăng nhập không hợp lệ.");
+            req.getRequestDispatcher(
+                    "/login.jsp")
+                    .include(req, resp);
+            return;
+        }
+
+        if (password == null || password.isEmpty() || password.trim().isEmpty()) {
+            req.setAttribute(
+                    "error",
+                    "Vui lòng nhập mật khẩu.");
+            req.getRequestDispatcher(
+                    "/login.jsp")
+                    .include(req, resp);
+            return;
+        }
+
+        if (password.length() > 100) {
+            req.setAttribute(
+                    "error",
+                    "Mật khẩu không hợp lệ.");
+            req.getRequestDispatcher(
+                    "/login.jsp")
+                    .include(req, resp);
+            return;
+        }
+
         User user =
-                authService.findUserByUsername(username);
+                authService.findUserByUsername(trimmedUsername);
 
         if (user == null || !vn.iotstar.util.PasswordUtil.matches(password, user.getPassword())) {
 

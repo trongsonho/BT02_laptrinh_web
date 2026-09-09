@@ -23,16 +23,27 @@ public class AuthService {
             return "Tên đăng nhập không được để trống";
         }
 
+        String trimmedUsername = username.trim();
+        if (!vn.iotstar.util.ValidationUtil.isValidUsername(trimmedUsername)) {
+            return "Tên đăng nhập phải từ 3 đến 30 ký tự và chỉ chứa chữ cái, số hoặc dấu gạch dưới (_)";
+        }
+
         if (email == null || email.trim().isEmpty()) {
             return "Email không được để trống";
         }
 
-        if (password == null || password.trim().isEmpty()) {
+        String trimmedEmail = email.trim();
+        if (!vn.iotstar.util.ValidationUtil.isValidEmail(trimmedEmail)) {
+            return "Email không đúng định dạng";
+        }
+
+        if (password == null || password.isEmpty() || password.trim().isEmpty()) {
             return "Mật khẩu không được để trống";
         }
 
-        String trimmedUsername = username.trim();
-        String trimmedEmail = email.trim();
+        if (!vn.iotstar.util.ValidationUtil.isValidPassword(password)) {
+            return "Mật khẩu phải có từ 8 đến 100 ký tự";
+        }
 
         User existingByUsername = userDao.findByUsername(trimmedUsername);
         if (existingByUsername != null && existingByUsername.isActive()) {

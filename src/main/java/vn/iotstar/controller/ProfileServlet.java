@@ -84,7 +84,7 @@ public class ProfileServlet extends HttpServlet {
         String normalizedEmail = (email != null) ? email.trim().toLowerCase() : "";
         if (normalizedEmail.isEmpty()) {
             error = "Email không được để trống.";
-        } else if (!normalizedEmail.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+        } else if (!vn.iotstar.util.ValidationUtil.isValidEmail(normalizedEmail)) {
             error = "Email không hợp lệ.";
         } else {
             User existing = userDao.findByEmail(normalizedEmail);
@@ -99,6 +99,8 @@ public class ProfileServlet extends HttpServlet {
                 error = "Họ và tên không được để trống.";
             } else if (fullname.trim().length() > 150) {
                 error = "Họ và tên không được vượt quá 150 ký tự.";
+            } else if (vn.iotstar.util.ValidationUtil.hasControlCharacters(fullname)) {
+                error = "Họ và tên chứa ký tự không hợp lệ.";
             }
         }
 

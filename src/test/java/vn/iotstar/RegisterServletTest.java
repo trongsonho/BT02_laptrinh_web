@@ -145,6 +145,90 @@ public class RegisterServletTest {
         assertNull(requestAttrs.get("password"), "Password attribute MUST be null");
     }
 
+    @Test
+    public void testDoPostUsernameWithSpacesFailsValidation() throws Exception {
+        Map<String, Object> sessionAttrs = new HashMap<>();
+        Map<String, Object> requestAttrs = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
+        params.put("username", "user name");
+        params.put("email", "valid@example.com");
+        params.put("password", "Pass12345");
+
+        String[] forwardedUrl = new String[1];
+        HttpServletRequest req = createMockRequest("POST", "/register", sessionAttrs, requestAttrs, params, new String[1], forwardedUrl);
+        HttpServletResponse resp = createMockResponse(new String[1]);
+
+        servlet.service(req, resp);
+
+        assertEquals("/register.jsp", forwardedUrl[0]);
+        assertNotNull(requestAttrs.get("error"));
+        assertTrue(requestAttrs.get("error").toString().contains("Tên đăng nhập phải từ 3 đến 30 ký tự"));
+        assertNull(requestAttrs.get("password"));
+    }
+
+    @Test
+    public void testDoPostUsernameTooShortFailsValidation() throws Exception {
+        Map<String, Object> sessionAttrs = new HashMap<>();
+        Map<String, Object> requestAttrs = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
+        params.put("username", "ab");
+        params.put("email", "valid@example.com");
+        params.put("password", "Pass12345");
+
+        String[] forwardedUrl = new String[1];
+        HttpServletRequest req = createMockRequest("POST", "/register", sessionAttrs, requestAttrs, params, new String[1], forwardedUrl);
+        HttpServletResponse resp = createMockResponse(new String[1]);
+
+        servlet.service(req, resp);
+
+        assertEquals("/register.jsp", forwardedUrl[0]);
+        assertNotNull(requestAttrs.get("error"));
+        assertTrue(requestAttrs.get("error").toString().contains("Tên đăng nhập phải từ 3 đến 30 ký tự"));
+        assertNull(requestAttrs.get("password"));
+    }
+
+    @Test
+    public void testDoPostPasswordTooShortFailsValidation() throws Exception {
+        Map<String, Object> sessionAttrs = new HashMap<>();
+        Map<String, Object> requestAttrs = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
+        params.put("username", "validuser");
+        params.put("email", "valid@example.com");
+        params.put("password", "1234567"); // 7 chars
+
+        String[] forwardedUrl = new String[1];
+        HttpServletRequest req = createMockRequest("POST", "/register", sessionAttrs, requestAttrs, params, new String[1], forwardedUrl);
+        HttpServletResponse resp = createMockResponse(new String[1]);
+
+        servlet.service(req, resp);
+
+        assertEquals("/register.jsp", forwardedUrl[0]);
+        assertNotNull(requestAttrs.get("error"));
+        assertTrue(requestAttrs.get("error").toString().contains("Mật khẩu phải có từ 8 đến 100 ký tự"));
+        assertNull(requestAttrs.get("password"));
+    }
+
+    @Test
+    public void testDoPostInvalidEmailFailsValidation() throws Exception {
+        Map<String, Object> sessionAttrs = new HashMap<>();
+        Map<String, Object> requestAttrs = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
+        params.put("username", "validuser");
+        params.put("email", "invalid-email-address");
+        params.put("password", "Pass12345");
+
+        String[] forwardedUrl = new String[1];
+        HttpServletRequest req = createMockRequest("POST", "/register", sessionAttrs, requestAttrs, params, new String[1], forwardedUrl);
+        HttpServletResponse resp = createMockResponse(new String[1]);
+
+        servlet.service(req, resp);
+
+        assertEquals("/register.jsp", forwardedUrl[0]);
+        assertNotNull(requestAttrs.get("error"));
+        assertTrue(requestAttrs.get("error").toString().contains("Email không đúng định dạng"));
+        assertNull(requestAttrs.get("password"));
+    }
+
     private HttpServletRequest createMockRequest(String method, String uri,
                                                  Map<String, Object> sessionAttrs,
                                                  Map<String, Object> requestAttrs,

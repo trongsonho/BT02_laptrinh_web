@@ -32,13 +32,38 @@ public class ForgotPasswordServlet
             HttpServletResponse resp)
             throws ServletException, IOException {
 
+        req.setCharacterEncoding("UTF-8");
+
         String email =
                 req.getParameter("email");
+
+        String trimmedEmail = (email != null) ? email.trim() : "";
+        req.setAttribute("email", trimmedEmail);
+
+        if (trimmedEmail.isEmpty()) {
+            req.setAttribute(
+                    "error",
+                    "Vui lòng nhập email.");
+            req.getRequestDispatcher(
+                    "/forgot-password.jsp")
+                    .include(req, resp);
+            return;
+        }
+
+        if (!vn.iotstar.util.ValidationUtil.isValidEmail(trimmedEmail)) {
+            req.setAttribute(
+                    "error",
+                    "Email không đúng định dạng.");
+            req.getRequestDispatcher(
+                    "/forgot-password.jsp")
+                    .include(req, resp);
+            return;
+        }
 
         boolean success = false;
         String errorMsg = null;
         try {
-            success = authService.sendResetOtp(email);
+            success = authService.sendResetOtp(trimmedEmail);
             if (!success) {
                 errorMsg = "Email không tồn tại trên hệ thống.";
             }
